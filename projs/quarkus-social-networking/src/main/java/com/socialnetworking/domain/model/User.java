@@ -1,13 +1,15 @@
 package com.socialnetworking.domain.model;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends PanacheEntityBase {
 
-    @Id
+    @Id // PanacheEntity has auto increment by id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
