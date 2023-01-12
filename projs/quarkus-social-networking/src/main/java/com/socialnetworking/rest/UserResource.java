@@ -1,10 +1,12 @@
 package com.socialnetworking.rest;
 
 import com.socialnetworking.domain.model.User;
+import com.socialnetworking.domain.repository.UserRepository;
 import com.socialnetworking.dto.CreateUserRequest;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,6 +17,12 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
+    private UserRepository repository;
+    @Inject
+    public UserResource(UserRepository repository){
+        this.repository = repository;
+    }
+
     @POST
     @Transactional
     public Response createUser( CreateUserRequest createUserRequest){
@@ -23,17 +31,14 @@ public class UserResource {
         user.setName(createUserRequest.getName());
         user.setAge(createUserRequest.getAge());
 
-        user.persist(); // save entity in database
-
-//        user.count();
-//        user.delete("delete from User where age < 18");
+        repository.persist(user); // save entity in database
 
         return Response.ok(user).build();
     }
 
     @GET
     public Response listAll(){
-        PanacheQuery<User> query = User.findAll(); // User extends PanacheEntityBase
+        PanacheQuery<User> query = repository.findAll();
         return Response.ok(query.list()).build();
     }
 
@@ -41,10 +46,10 @@ public class UserResource {
     @Path("{id}")
     @Transactional
     public Response deleteUser( @PathParam("id") Long id){
-        User user = User.findById(id); // User extends PanacheEntityBase
+        User user = repository.findById(id);
 
         if (user != null){
-            user.delete();
+            repository.delete(user);
             return  Response.ok().build();
         }
 
@@ -55,7 +60,7 @@ public class UserResource {
     @Path("{id}")
     @Transactional
     public Response updateUser( @PathParam("id") Long id, CreateUserRequest userData ){
-        User user = User.findById(id); // User extends PanacheEntityBase
+        User user = repository.findById(id);
 
         if (user != null){
             user.setName(userData.getName());

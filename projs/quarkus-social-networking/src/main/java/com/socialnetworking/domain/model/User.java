@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User extends PanacheEntityBase {
+public class User {
 
     @Id // PanacheEntity has auto increment by id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
